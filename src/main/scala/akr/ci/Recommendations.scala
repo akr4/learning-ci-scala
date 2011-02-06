@@ -5,16 +5,12 @@ object Recommendations {
     /**
      * 二人とも評価している Movie のリストを返す
      */
-    def commonMovies(reviews: List[Review], r1: Reviewer, r2: Reviewer): List[Movie] = {
+    private[ci] def commonMovies(reviews: List[Review], r1: Reviewer, r2: Reviewer): List[Movie] = {
         reviews.filter(_.reviewer == r1).map(_.movie).intersect(reviews.filter(_.reviewer == r2).map(_.movie))
     }
 
-}
-
-object Main extends Application {
-
     def similarityDistance(reviews: List[Review], r1: Reviewer, r2: Reviewer): Double = {
-        val bothReviewed = Recommendations.commonMovies(ReviewDb.reviews, r1, r2)
+        val bothReviewed = commonMovies(ReviewDb.reviews, r1, r2)
 
         // 両者ともに評価しているものが一つもなければ 0 を返す
         if (bothReviewed.size == 0) return 0.0
@@ -34,6 +30,8 @@ object Main extends Application {
 
         reviewMap.values.foldLeft(0.0) { (a, b) => a + Math.pow(b._1.rate.value - b._2.rate.value, 2) }
     }
+}
 
-    println(similarityDistance(ReviewDb.reviews, ReviewDb.lisa, ReviewDb.michael))
+object Main extends Application {
+    println(Recommendations.similarityDistance(ReviewDb.reviews, ReviewDb.lisa, ReviewDb.michael))
 }
