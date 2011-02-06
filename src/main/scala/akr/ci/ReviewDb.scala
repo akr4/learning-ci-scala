@@ -8,7 +8,11 @@ case class Rate(value: Double)
 
 case class Review(reviewer: Reviewer, movie: Movie, rate: Rate)
 
-object ReviewDb {
+abstract trait ReviewDb {
+    def findAllReviews(): List[Review]
+}
+
+object InMemoryReviewDb extends  ReviewDb {
     implicit def toRate(value: Double): Rate = Rate(value)
 
     val lisa = Reviewer("Lisa Rose")
@@ -26,7 +30,7 @@ object ReviewDb {
     val youMeAndDupree = Movie("You, Me and Dupree")
     val theNightListener = Movie("The Night Listener")
 
-    val reviews = List(
+    private val reviews = List(
         Review(lisa, ladyInTheWater, 2.5),
         Review(lisa, snakesOnAPlane, 3.5),
         Review(lisa, justMyLuck, 3.0),
@@ -62,4 +66,6 @@ object ReviewDb {
         Review(toby, youMeAndDupree, 1.0),
         Review(toby, supermanReturns, 4.0)
     )
+
+    override def findAllReviews(): List[Review] = { reviews }
 }
